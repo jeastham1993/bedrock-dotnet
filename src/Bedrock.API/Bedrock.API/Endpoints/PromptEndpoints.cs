@@ -34,6 +34,22 @@ public class PromptEndpoints
     [Tracing]
     public async Task<PromptResponse> Prompt([FromBody] PromptRequest req)
     {
-        `
+        byte[] byteArray = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new CohereCommand(req.Prompt)));
+        MemoryStream stream = new MemoryStream(byteArray);
+
+        var result = await this._bedrockRuntimeClient.InvokeModelAsync(new InvokeModelRequest()
+        {
+            ModelId = "cohere.command-text-v14",
+            Body = stream,
+            ContentType = "application/json",
+            Accept = "application/json"
+        });
+
+        var response = JsonSerializer.Deserialize<CohereCommandResponse>(result.Body);
+
+        return new PromptResponse()
+        {
+            Response = response.Generations[0].Text
+        };
     }
 }

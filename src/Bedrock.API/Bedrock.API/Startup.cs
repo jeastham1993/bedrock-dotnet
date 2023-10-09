@@ -1,3 +1,4 @@
+using Amazon;
 using Amazon.BedrockRuntime;
 using Amazon.Lambda.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +10,6 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddSingleton(new AmazonBedrockRuntimeClient());
+        services.AddSingleton(new AmazonBedrockRuntimeClient(RegionEndpoint.USEast1));
     }
 }
